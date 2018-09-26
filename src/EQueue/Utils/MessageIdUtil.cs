@@ -38,16 +38,23 @@ namespace EQueue.Utils
             Buffer.BlockCopy(messageIdBytes, 4, portBytes, 0, 4);
             Buffer.BlockCopy(messageIdBytes, 8, messagePositionBytes, 0, 8);
 
-            var ip = BitConverter.ToInt32(ipBytes, 0);
-            var port = BitConverter.ToInt32(portBytes, 0);
-            var messagePosition = BitConverter.ToInt64(messagePositionBytes, 0);
 
-            return new MessageIdInfo
+            IPAddress parseAddress = null;
+            var messagePosition = BitConverter.ToInt64(messagePositionBytes, 0);
+            var messageInfo = new MessageIdInfo();
+            try
             {
-                IP = new IPAddress(ip),
-                Port = port,
-                MessagePosition = messagePosition
-            };
+                parseAddress = new IPAddress(BitConverter.ToUInt32(ipBytes, 0));
+            }
+            catch
+            {
+                new Exception("ParseAddress error.");
+            }
+            var port = BitConverter.ToInt32(portBytes, 0);
+            messageInfo.IP = parseAddress;
+            messageInfo.Port = port;
+            messageInfo.MessagePosition = messagePosition;
+            return messageInfo;
         }
     }
     public struct MessageIdInfo
